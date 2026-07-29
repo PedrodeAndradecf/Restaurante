@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: restaurante_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: restaurante_db
+      POSTGRES_USER: restaurante_user
+      POSTGRES_PASSWORD: restaurante_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - restaurante_pg_data:/var/lib/postgresql/data
+
+volumes:
+  restaurante_pg_data:

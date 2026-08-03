@@ -14,6 +14,7 @@ public class Produto {
     private Long id;
 
 
+    private String nome;
     private String descricao;
 
     private BigDecimal preco;
@@ -106,5 +107,13 @@ public class Produto {
 
     public void setCategoria(CategoriaProduto categoria) {
         this.categoria = categoria;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 }

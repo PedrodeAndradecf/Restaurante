@@ -1,0 +1,9 @@
+package Backend.Restaurante.domain.enums;
+
+public enum StatusItemPedido {
+    PENDENTE,
+    EM_PREPARO,
+    PRONTO,
+    ENTREGUE,
+    CANCELADO
+}

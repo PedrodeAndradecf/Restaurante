@@ -26,6 +26,18 @@ public class Pagamento {
 
     private String codigoTransacaoExterna;
 
+    @Column(name = "data_pagamento")
+    private LocalDateTime dataPagamento;
+
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDateTime dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
+    @Column(name = "criado_em")
     private LocalDateTime criadoEm;
 
     @ManyToOne(fetch = FetchType.LAZY)

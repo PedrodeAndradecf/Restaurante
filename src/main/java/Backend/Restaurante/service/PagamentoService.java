@@ -45,7 +45,7 @@ public class PagamentoService {
 
     @Transactional
     public void pagar (Long pedidoId, String formaPagamento){
-        FechamentoConta fechamento = fechamentoRepository.findByPedidoId(pedidoId)
+        FechamentoConta fechamento = fechamentoRepository.findPedidoId(pedidoId)
                 .orElseThrow( () -> new RegraNegocioException("Conta não encontrada"));
 
 

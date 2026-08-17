@@ -21,5 +21,5 @@ public interface PedidoItemRepository extends JpaRepository<PedidoItem, Long> {
         WHERE i.status = :status
         ORDER BY i.id
     """)
-    List<PedidoItem> buscarItensComProdutoEpedido(StatusItemPedido status);
+    List<PedidoItem> buscarItensComProdutoEPedido(StatusItemPedido status);
 }

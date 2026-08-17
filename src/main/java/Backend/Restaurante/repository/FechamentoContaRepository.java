@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface FechamentoContaRepository extends JpaRepository<FechamentoConta, Long> {
     boolean existsByPedidoId(Long pedidoId);
 
-    Optional<FechamentoConta> findByPedidoId(Long pedidoId);
+    Optional<FechamentoConta> findPedidoId(Long pedidoId);
 }

@@ -99,7 +99,7 @@ public class FechamentoContaService {
         fechamento.setTotal(total);
 
         pedido.setStatus(StatusPedido.FECHADO);
-        pedido.setDataFechamento(LocalDateTime.now());
+        pedido.setDataFechamento(LocalDateTime.now()); 
 
         FechamentoConta fechamentoSalvo = fechamentoContaRepository.save(fechamento);
         pedidoRepository.save(pedido);

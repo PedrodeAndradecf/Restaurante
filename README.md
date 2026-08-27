@@ -1,47 +1,50 @@
+# Restaurante Service API
 
-# Restaurante API
+API RESTful desenvolvida para a orquestração e gerenciamento do fluxo de atendimento, pedidos e cardápio de um restaurante. O projeto foi desenhado com foco em desacoplamento, separação de responsabilidades e integração com serviços externos.
 
-API RESTful para gerenciamento do fluxo de pedidos, mesas e cardápio de um restaurante. 
+## Arquitetura e Decisões de Design
 
-Este projeto foi construído para aplicar conceitos sólidos de engenharia de software, modelagem de domínio e construção de APIs back-end utilizando o ecossistema Spring.
+O projeto segue uma **Arquitetura em Camadas (Layered Architecture)** clássica, mas com forte ênfase no isolamento do domínio. O fluxo da requisição foi estruturado para proteger a integridade dos dados e evitar o vazamento do modelo de banco de dados (Entidades) para as bordas da aplicação (Controllers/APIs).
 
-## 💻 Tecnologias e Ferramentas
+### 1. Camada de Apresentação e Contratos (Controllers & DTOs)
+Os Controllers atuam exclusivamente como portas de entrada (Endpoints HTTP). 
+- **Data Transfer Objects (DTOs):** O modelo de domínio nunca é exposto diretamente. Utilizo DTOs específicos para operações de entrada (`RequestDTO`) e saída (`ResponseDTO`), prevenindo *Over-Posting* e garantindo que o contrato da API possa evoluir independentemente do esquema do banco de dados.
 
-- **Linguagem:** Java 17+
-- **Framework:** Spring Boot 3 (Web, Data JPA, Validation)
-- **Banco de Dados:** PostgreSQL (ou MySQL / H2)
-- **Documentação:** SpringDoc OpenAPI (Swagger)
-- **Testes:** JUnit 5 e Mockito
-- **Gerenciador de Dependências:** Maven
+### 2. Mappers (Conversão de Objetos)
+Para garantir a transição fluida e segura entre as camadas, o projeto implementa o padrão de **Mappers**.
+- A responsabilidade de converter `Entity -> DTO` e `DTO -> Entity` é isolada em classes/componentes dedicados (Mappers). Isso mantém os Controllers e Services limpos, removendo código boilerplate de mapeamento manual e garantindo que a regra de conversão fique centralizada e facilmente testável.
 
-## 🧠 Contexto de Negócio (Domínio)
+### 3. Integração Externa (Spring Cloud OpenFeign)
+A comunicação com APIs e microsserviços externos foi abstraída utilizando o **OpenFeign**.
+- **Proxy Declarativo:** Em vez de usar clientes HTTP verbosos (como `RestTemplate` ou `WebClient`), o Feign é utilizado para criar interfaces declarativas. Isso reduz o boilerplate técnico, tratando serialização, deserialização e headers de forma transparente.
+- **Isolamento de Falhas:** O uso do Feign prepara a aplicação para futuras implementações de resiliência (como *Circuit Breakers* ou tratamento de *Retries* em caso de instabilidade dos serviços externos).
 
-A aplicação resolve problemas reais da operação de um restaurante, cobrindo os seguintes fluxos:
+### 4. Camada de Negócios (Services)
+A camada de `Service` é o coração da aplicação. Ela não atua como um mero repassador (pass-through) para o Repository, mas sim como a orquestradora central das regras de negócio.
+- **Orquestração e Atomicidade:** Métodos críticos de negócio são anotados com `@Transactional` para garantir o princípio ACID. Se o processo de fechamento de um pedido envolver salvar no banco local e notificar um serviço externo via Feign, qualquer falha garante o *rollback* do estado no banco.
+- **Máquina de Estados de Pedidos:** A lógica de Service blinda as transições de estado. Um pedido possui validações rígidas: ele não pode pular de `CRIADO` para `FINALIZADO` sem passar por `EM_PREPARO`. A Service lança exceções de domínio customizadas caso transições inválidas sejam tentadas.
+- **Validação de Invariantes:** Antes de qualquer persistência, a Service verifica as regras fundamentais (ex: disponibilidade de um item no estoque/cardápio antes de adicioná-lo à comanda da mesa).
 
-- **Cardápio:** Gerenciamento de itens consumíveis (cadastro, atualização de preços, disponibilidade).
-- **Atendimento:** Abertura de mesas e vínculo de comandas aos clientes.
-- **Ciclo de Vida do Pedido:** Controle de estado da cozinha. Um pedido transita entre status restritos (ex: `CRIADO` -> `EM_PREPARO` -> `PRONTO` -> `ENTREGUE`).
-- **Faturamento:** Fechamento da mesa com cálculo automatizado do valor total consumido.
+## Stack Tecnológica
 
-## ⚙️ Arquitetura e Boas Práticas
+- **Java 17+**
+- **Spring Boot 3** (Web, Data JPA, Validation)
+- **Spring Cloud OpenFeign:** Para comunicação HTTP declarativa com APIs externas.
+- **Mapeamento de Dados:** Mappers para segregação DTO/Entity.
+- **Banco de Dados:** PostgreSQL (Mapeamento ORM via Hibernate).
+- **Tratamento de Exceções:** `@RestControllerAdvice` e `Problem Details` para padronização de erros RFC 7807.
 
-O código foi estruturado pensando em manutenibilidade e leitura fácil para outros desenvolvedores:
+## Instruções de Execução
 
-- **Arquitetura em Camadas (Layered):** Separação estrita entre `Controllers`, `Services` e `Repositories`. As regras de negócio ficam isoladas na camada de serviço.
-- **Data Transfer Objects (DTO):** As entidades de banco de dados não são expostas nos endpoints. O uso de DTOs previne a vulnerabilidade de *Over-Posting* e controla o contrato da API.
-- **Tratamento de Exceções Global:** Implementação de um `@RestControllerAdvice` para capturar exceções de negócio (ex: "Mesa já está ocupada" ou "Item indisponível") e retornar respostas HTTP padronizadas e limpas para o client.
-- **Validações:** Uso de Bean Validation (Jakarta) para garantir a integridade dos dados de entrada antes mesmo de chegarem às regras de negócio.
+### Dependências Locais
+Certifique-se de ter instalado:
+- JDK 17
+- Maven 3.8+
+- Docker (para subir o contêiner do banco de dados)
 
-## 🚀 Como Executar Localmente
+### Setup e Inicialização
 
-### Pré-requisitos
-- JDK 17 (ou superior) instalado
-- Maven instalado
-- Banco de dados rodando (se estiver usando Docker, basta executar o compose)
-
-### Passos
-
-1. Clone o repositório:
+1. Realize o clone do projeto:
 ```bash
 git clone [https://github.com/PedrodeAndradecf/Restaurante.git](https://github.com/PedrodeAndradecf/Restaurante.git)
 cd Restaurante

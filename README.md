@@ -1,6 +1,6 @@
 # Restaurante Service API
 
-API RESTful desenvolvida para a orquestração e gerenciamento do fluxo de atendimento, pedidos e cardápio de um restaurante. O projeto foi desenhado com foco em desacoplamento, separação de responsabilidades e integração com serviços externos.
+API RESTful sendo desenvolvida para a orquestração e gerenciamento do fluxo de atendimento, pedidos e cardápio de um restaurante. O projeto foi desenhado com foco em desacoplamento, separação de responsabilidades e integração com serviços externos.
 
 ## Arquitetura e Decisões de Design
 
